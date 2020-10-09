@@ -1,5 +1,8 @@
 # History 
 
+## 0.1.1 (2020-10-08)
+Re-tested in local terminal. Uploaded to PyPI.
+
 ## 0.1.0 (2019-06-25)
 Audio files packaged.
 
