@@ -1,7 +1,6 @@
 # DingPy 🛎 
 
 [![GitHub license](https://img.shields.io/github/license/tinahbu/dingpy)](https://github.com/tinahbu/dingpy/blob/master/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/tinahbu/dingpy)](https://github.com/tinahbu/dingpy/issues)
 [![pypi](https://img.shields.io/badge/pypi-1.0.0-blue)](https://pypi.org/project/dingpy/)
 
 A Python package that plays an audio alert when your program finishes, especially helpful for long running jobs and impatient developers.
