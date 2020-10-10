@@ -1,5 +1,8 @@
 # History 
 
+## 0.1.4 (2020-10-10)
+Now supports both `import dingpy` and `from dingpy import Alarm`.
+
 ## 0.1.1 (2020-10-08)
 Re-tested in local terminal. Uploaded to PyPI.
 
