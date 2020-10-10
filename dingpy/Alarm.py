@@ -7,9 +7,6 @@ from pydub.playback import play
 import tempfile
 from typing import List
 
-
-boto3.setup_default_session(profile_name='tinabu')
-
 logging.getLogger().setLevel(logging.INFO)
 
 BUCKET='dingpy'
