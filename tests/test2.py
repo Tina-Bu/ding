@@ -1,4 +1,0 @@
-# import dingpy
-
-# dingpy.main()
-

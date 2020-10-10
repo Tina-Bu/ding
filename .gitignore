@@ -1,3 +1,10 @@
+# testing folder
+test/*
+notes.md
+
+# audio files
+dingpy/alarm_audio/*
+
 # python package distribution files
 dist/*
 develop-eggs/*
@@ -6,7 +13,6 @@ eggs/
 .eggs/
 sdist/
 MANIFEST
-
 
 # build files
 build/*
@@ -18,4 +24,12 @@ __pycache__/
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
+# compiled bytecode
+*.pyc
 
+# config files
+dingpy/.dingpy.conf
+
+# OS generated files
+.DS_Store
+.DS_Store?

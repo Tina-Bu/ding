@@ -1,64 +1,128 @@
 from pydub import AudioSegment
 from pydub.playback import play
 import os
-
+from typing import List
+from datetime import datetime
 import boto3
+from botocore.exceptions import ClientError
+import logging
 import tempfile
 from pync import Notifier
 
-s3_client = boto3.client('s3')
+boto3.setup_default_session(profile_name='tinabu')
+
+logging.getLogger().setLevel(logging.INFO)
+
 BUCKET='dingpy'
 
 
 class Alarm:
-    def __init__(self, timer=False, alarm='beep'):
+    def __init__(self, sound='bells_tibetan'):
         '''
-        Alarm constructor
+        Constructor.
         '''
-        # logging.basicConfig()
-        # logger = logging.getLogger()
-        # logger.setLevel(logging.INFO)
-
-        # set directory of audio file
-        self.alarm_audio_path = f'./alarm_audio/{alarm}.mp3'
-
-        audio_file_key = f'{alarm}.mp3'
-        f = tempfile.NamedTemporaryFile()
+        self._sound = sound
+        # create a local temporary directory to save the downloaded audio file
+        self._dir = tempfile.mkdtemp()
+        self._audio_file = f'{self._dir}/dingpy_{self._sound}.mp3'
+        self._pre_loaded_alarms = [
+            'beep',
+            'bells_tibetan',
+            'clock_chimes',
+            'computer_magic',
+            'house_finch',
+            'japanese_temple_bell_small',
+            'music_box',
+            'old_fashioned_school_bell',
+            'service_bell',
+            'tinkle'
+        ]
+        self.s3_client = boto3.client('s3')
 
         try:
-            s3_client.head_object(Bucket=BUCKET, Key=audio_file_key)
-            s3_client.download_file(Bucket=BUCKET, Key=audio_file_key, Filename=f.name)
-            self.alarm_audio_path = f.name
-        except:
-            print(f'Alarm audio file {alarm} doesn''t exist in bucket s3://{BUCKET}')
-            raise
+            self.s3_client.download_file(Bucket=BUCKET, Key=f'{sound}.mp3', Filename=self._audio_file)
+            logging.info(f'😉 Put me at the end of your code block and I will notify you with a {sound} sound 🔔.')
+
+        except ClientError as e:
+            logging.error(f'❌ Error downloading audio file {sound} from bucket s3://{BUCKET}/: {e}')
+
+
+    def __str__(self):
+        return f'Alarm {self._sound}.'
 
 
     def ding(self):
         '''
-        play an alarm sound
+        Play the alarm.
         '''
-        print(self.alarm_audio_path)
-        alarm = AudioSegment.from_file(self.alarm_audio_path, format="mp3")
+
+        alarm = AudioSegment.from_file(self._audio_file, format="mp3")
         play(alarm)
+        logging.info(f'🔔 at {datetime.now()}')
 
 
     def list_alarms(self):
         '''
-        Print a list of pre-built alarm sound effects.
+        Print a list of pre-loaded alarm sounds.
         '''
-        # enumerate local files recursively
-        for root, dirs, files in os.walk("./alarm_audio"):
-            print([filename for filename in files if not filename.startswith('.')])
+        alarm_files = self._get_s3_keys(bucket=BUCKET)
+        return [alarm[:-4] if alarm.endswith('mp3') else alarm for alarm in alarm_files]
 
-                # local_path = os.path.join(root, filename)
-                # relative_path = os.path.relpath(local_path, local_src_dir)
+    def upload_alarm(self, file_path: str, sound_name : str):
+        '''
+        Allow user to upload a customized mp3 alarm to a public s3 bucket.
+
+        Args:
+            file_path: local path that contains the mp3 file.
+            sound_name: name you want for your alarm, without the '.mp3' extension.
+        '''
+        key = f'{sound_name}.mp3'
+        if self._check_exists_in_s3(BUCKET, key):
+            logging.error(f'🚫 Sound {sound_name} already exists, please choose a different name.')
+        else:
+            try:
+                response = self.s3_client.upload_file(file_path, Bucket=BUCKET, Key=key)
+                # logging.info(f'\N{party popper} Upload succeed! You can now create your own Alarm \N{bell} with `Alarm(sound_name)`')
+            except ClientError as e:
+                logging.error(f'❌ Error uploading audio file {sound_name} to bucket s3://{BUCKET}/: {e}')
 
 
+    def delete_alarm(self, sound_name : str):
+        '''
+        Allow user to delete custom uploaded alarm sounds.
 
-Alarm = Alarm()
+        Args:
+            sound_name: name of the alarm to delete, without the '.mp3' extension.
+        '''
+        key = f'{sound_name}.mp3'
+        if sound_name in self._pre_loaded_alarms:
+            logging.error(f'🚫 Can''t delete pre-loaded alarms.')
+
+        if self._check_exists_in_s3(BUCKET, key):
+            self.s3_client.delete_object(Bucket=BUCKET, Key=key)
+            logging.info(f'✅ Deleted alarm {sound_name} from bucket s3://{BUCKET}/.')
+        else:
+            logging.error(f'❌ Alarm file {sound_name}.mp3 doesn\'t exist in bucket s3://{BUCKET}/')
 
 
-if __name__ == '__main__':
-    Alarm.ding()
+    def _check_exists_in_s3(self, bucket: str, key: str) -> bool:
+        '''
+        Check if a key exists in the given bucket.
+        '''
+        try:
+            self.s3_client.head_object(Bucket=BUCKET, Key=key)
+        except ClientError as e:
+            return int(e.response['Error']['Code']) != 404
+        return True
+
+
+    def _get_s3_keys(self, bucket: str) -> List[str]:
+        '''
+        Get a list of keys in an S3 bucket.
+        '''
+        keys = []
+        resp = self.s3_client.list_objects_v2(Bucket=bucket)
+        for obj in resp['Contents']:
+            keys.append(obj['Key'])
+        return keys
 
