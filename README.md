@@ -47,6 +47,11 @@ If you'd like to contribute your mp3 file for other `dingpy` users to access, yo
 dingpy.upload_alarm(
     file_path='/absolute_path_to_file/sound.mp3', 
     sound_name='beeep') 
+
+# verify that your upload is successful by calling list_alarms again
+# and tell it to look for all alarms 
+# (without all=True list_alarms will only return the 10 pre-built sounds)
+dingpy.list_alarms(all=True)
 ```
 
 After your mp3 file is uploaded, they can be used by other people if they pass in the sound name and set the `s3` parameter to be `True`:
@@ -106,7 +111,10 @@ $
 $ # for Linux
 $ apt-get install libav-tools libavcodec-extra
 ```
+
 As stated above, the 10 default alarms are packaged with `dingpy` but user uploaded alarms are hosted in a public s3 bucket. So if you'd like to use the customization feature you will have to have aws cli configured. To do that, follow the doc [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
+
+`dingpy` only works with Python3.
 
 ## Future Work
 
