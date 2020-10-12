@@ -106,14 +106,6 @@ $
 $ # for Linux
 $ apt-get install libav-tools libavcodec-extra
 ```
-
-Even if you have `ffmpeg` or `libav` installed, it's also recommended to have any one of these packages installed as well.
-
-- `simpleaudio`
-- `pyaudio`
-- `ffplay` (usually bundled with ffmpeg)
-- `avplay` (usually bundled with libav)
-
 As stated above, the 10 default alarms are packaged with `dingpy` but user uploaded alarms are hosted in a public s3 bucket. So if you'd like to use the customization feature you will have to have aws cli configured. To do that, follow the doc [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
 
 ## Future Work

@@ -26,10 +26,10 @@ dependency_links = [x.strip().replace('git+', '') for x in all_reqs if 'git+' no
 
 setup(
     name='dingpy',
-    version='1.0.2',
+    version='1.0.3',
     author='Tina Bu',
     author_email='tina.hongbu@gmail.com',
-    description='first release :)',
+    description='added simpleaudio to dependency requirements.txt',
     long_description=readme,
     long_description_content_type='text/markdown',
     url='https://github.com/tinahbu/dingpy',
