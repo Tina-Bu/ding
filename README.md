@@ -37,21 +37,23 @@ dingpy.list_alarms()
 The 10 audio files are packaged and downloaded when you install `dingpy`. You can further customize `dingpy` by asking it to use a mp3 file from your local directory via the `path` parameter:
 
 ```
-dingpy.ding(path='/local_path/sound.mp3')
+dingpy.ding(path='/absolute_path_to_file/sound.mp3')
 ```
 
 If you'd like to contribute your mp3 file for other `dingpy` users to access, you can upload it to the public `dingpy` s3 bucket:
 
 ```
 # sound_name needs to be globally unique
-dingpy.upload_alarm(file_path='/local_path/sound.mp3', sound_name='alarm-name') 
+dingpy.upload_alarm(file_path='/absolute_path_to_file/sound.mp3', sound_name='beeep') 
 ```
 
-Your uploaded mp3 file will be downloaded each time when `dingpy.ding()` is called. To use an alarm uploaded by other people (because it's not packaged with the `dingpy` installation), you will need to set the `s3` parameter:
+After your mp3 file is uploaded, they can be used by other people by specifying the sound name and setting the `s3` parameter to be `True`:
 
 ```
 dingpy.ding(sound='sound-name', s3=True)
 ```
+
+Note that the mp3 file will be downloaded each time when `dingpy.ding()` is called. 
 
 To delete an uploaded alarm (the 10 pre-loaded alarms can't be deleted):
 
@@ -95,7 +97,7 @@ As stated above, the 10 default alarms are packaged with `dingpy` but user uploa
 
 ## Inspirations <a name="inspirations"></a>
 
-I always wanted a Python package that notifies me with a ding when my code completes so I can go about doing other work in the meantime. I was surprised that I couldn't find one after quite some research. There are a few similar tools out there that somewhat do what I want them to do but not quite. So I decided to create `dingpy` for myself. And hopefully it will be helpful for you as well. That being said, if most of your work happens in the terminal or if you prefer to have a pop-up MacOS notification than an alarm, do checkout the projects below:
+I always wanted a Python package that notifies me with a ding when my code completes so I can go about doing other work in the meantime. I couldn't really find one after quite some research so I decided to create `dingpy` for myself. And hopefully it will be helpful to you as well. That being said, if most of your work happens in the terminal or if you prefer to have a pop-up MacOS notification than an audible alarm, do checkout the projects below:
 
 - [`pync`](https://pypi.org/project/pync/) a Python wrapper to send MacOS notifications (Mac only) (it claims to offer sound notification as well but I couldn't make it work)
 - [`ding`](https://github.com/xxv/ding/) a CLI alarm tool for local and remote jobs (it seems to me that you will have to provide your own alarm audio file, you will also need to keep a terminal open running this code at all times, it's not a python package that you can import)

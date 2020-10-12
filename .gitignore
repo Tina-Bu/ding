@@ -1,9 +1,9 @@
 # testing folder
-test/*
+local_testing/*
 notes.md
 
 # audio files
-dingpy/alarm_audio/*
+dingpy/data/*
 
 # python package distribution files
 dist/*

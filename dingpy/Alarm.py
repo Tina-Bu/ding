@@ -26,7 +26,6 @@ PRE_LOADED_ALARMS = [
 
 class MyAlarm(object):
     def __init__(self):
-        # create a local temporary directory to save the downloaded audio file
         self._sound = None
 
 
@@ -34,35 +33,28 @@ class MyAlarm(object):
         return f'DingPy MyAlarm Object (sound=\'{self._sound}\')'
 
 
-    def _ding_from_local(self, sound, path) -> None:
+    def _ding_from_library(self, sound) -> None:
         '''
-        If using default alarm:
-            read from local package directory.
-
-        If using other alarm effects from local directory:
-            read from loal directory.
-
-        If downloading alarms from s3:
-            first download the sound audio file from s3 to a temporary local directory,
-            then play the alarm and print the alarm time.
+        Read from local package directory to retrieve pre-loaded alarms.
         '''
-        # if using other alarm sounds from user's local directory
-        if path:
-            try:
-                alarm = AudioSegment.from_file(path, format="mp3")
-                play(alarm)
-            except:
-                logging.error(f'❌ Error loading audio file from directory {path}: {e}')
+        if sound in PRE_LOADED_ALARMS:
+            self._sound = sound
+            _local_tmp_path = pkg_resources.resource_filename(__name__, f'data/{sound}.mp3')
+            alarm = AudioSegment.from_file(_local_tmp_path, format="mp3")
+            play(alarm)
+        else:
+            logging.error(f'❌ Sound {sound} doesn\'t exist. Try using one of {PRE_LOADED_ALARMS}.')
 
-        # if using a pre-loaded alarm, load it from package installation directory
-        elif sound:
-            if sound in PRE_LOADED_ALARMS:
-                self._sound = sound
-                _local_tmp_path = pkg_resources.resource_filename(__name__, f'data/{sound}.mp3')
-                alarm = AudioSegment.from_file(_local_tmp_path, format="mp3")
-                play(alarm)
-            else:
-                logging.error(f'❌ Sound {sound} doesn\'t exist. Try using one of {PRE_LOADED_ALARMS}.')
+
+    def _ding_from_local(self, path) -> None:
+        '''
+        Read from local directory and play the mp3 file.
+        '''
+        try:
+            alarm = AudioSegment.from_file(path, format="mp3")
+            play(alarm)
+        except:
+            logging.error(f'❌ Error loading audio file from directory {path}. Please use the absolute path.')
 
 
     def _ding_from_s3(self, sound) -> None:
@@ -166,10 +158,13 @@ Alarm = MyAlarm()
 
 
 def ding(sound: str='japanese_temple_bell', s3: bool=False, path: str=None) -> None:
-    if sound and not s3:
-        Alarm._ding_from_local(sound=sound, path=path)
+    if path:
+        Alarm._ding_from_local(path=path)
+    elif sound and not s3:
+        Alarm._ding_from_library(sound=sound)
     elif sound and s3:
         Alarm._ding_from_s3(sound=sound)
+
 
 def list_alarms() -> None:
     Alarm._list_alarms()
