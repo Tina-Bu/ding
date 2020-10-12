@@ -25,10 +25,10 @@ dependency_links = [x.strip().replace('git+', '') for x in all_reqs if 'git+' no
 
 setup(
     name='dingpy',
-    version='1.0.5',
+    version='1.0.6',
     author='Tina Bu',
     author_email='tina.hongbu@gmail.com',
-    description='delete_alarms protect pre-loaded alarms',
+    description='parameter name standardize',
     long_description=readme,
     long_description_content_type='text/markdown',
     url='https://github.com/tinahbu/dingpy',

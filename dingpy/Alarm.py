@@ -90,47 +90,47 @@ class MyAlarm(object):
 
 
     @staticmethod
-    def _upload_alarm(path: str, name : str) -> None:
+    def _upload_alarm(path: str, sound : str) -> None:
         '''
         Allow user to upload a customized mp3 alarm to a public s3 bucket.
 
         Args:
             path: local path that contains the mp3 file.
-            name: name you want for your alarm, without the '.mp3' extension.
+            sound: soundname you want for your alarm, without the '.mp3' extension.
         '''
         # check if file is of mp3 type
         if not path.endswith('.mp3'):
             logging.error(f'😢 Sorry we only support mp3 format currently.')
 
-        key = f'{name}.mp3'
+        key = f'{sound}.mp3'
         if _check_exists_in_s3(bucket=BUCKET, key=key):
-            logging.error(f'🚫 Sound \'{name}\' already exists, please choose a different name.')
+            logging.error(f'🚫 Sound \'{sound}\' already exists, please choose a different name.')
         else:
             try:
                 response = s3_client.upload_file(path, Bucket=BUCKET, Key=key)
-                logging.info(f'🎉 Upload succeeded! You can now create your own Alarm 🛎 with \n `dingpy.ding(\'{name}\')`')
+                logging.info(f'🎉 Upload succeeded! You can now create your own Alarm 🛎 with \n `dingpy.ding(\'{sound}\')`')
             except ClientError as e:
-                logging.error(f'❌ Error uploading audio file \'{name}\' to s3 bucket: {e}')
+                logging.error(f'❌ Error uploading audio file \'{sound}\' to s3 bucket: {e}')
 
 
     @staticmethod
-    def _delete_alarm(name : str):
+    def _delete_alarm(sound : str):
         '''
         Allow user to delete custom uploaded alarm sounds.
 
         Args:
-            name: name of the alarm to delete, without the '.mp3' extension.
+            sound: sound name of the alarm to delete, without the '.mp3' extension.
         '''
-        key = f'{name}.mp3'
-        if name in PRE_LOADED_ALARMS:
-            logging.error(f'🚫 \'{name}\' is a pre-loaded alarm sound that can\'t be deleted.')
+        key = f'{sound}.mp3'
+        if sound in PRE_LOADED_ALARMS:
+            logging.error(f'🚫 \'{sound}\' is a pre-loaded alarm sound that can\'t be deleted.')
             return
 
         if _check_exists_in_s3(bucket=BUCKET, key=key):
             s3_client.delete_object(Bucket=BUCKET, Key=key)
-            logging.info(f'✅ Successfully deleted alarm \'{name}\' from s3 bucket.')
+            logging.info(f'✅ Successfully deleted alarm \'{sound}\' from s3 bucket.')
         else:
-            logging.error(f'❌ Alarm file {name}.mp3 doesn\'t exist in s3 bucket')
+            logging.error(f'❌ Alarm file {sound}.mp3 doesn\'t exist in s3 bucket')
 
 
 def _check_exists_in_s3(bucket: str, key: str) -> bool:
@@ -178,10 +178,10 @@ def list_alarms(all: bool=False) -> None:
         Alarm._list_alarms()
 
 
-def upload_alarm(path: str, name : str) -> None:
-    Alarm._upload_alarm(path, name)
+def upload_alarm(path: str, sound : str) -> None:
+    Alarm._upload_alarm(path, sound)
 
 
-def delete_alarm(name: str) -> None:
-    Alarm._delete_alarm(name)
+def delete_alarm(sound: str) -> None:
+    Alarm._delete_alarm(sound)
 
