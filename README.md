@@ -21,7 +21,7 @@ dingpy.list_alarms()
 
 ## Alarm Options
 
-`Dingpy` comes pre-loaded with 10 royalty free alarm sounds (downloaded from http://soundbible.com/):
+`Dingpy` comes pre-loaded with 10 royalty free alarm sounds (downloaded from http://soundbible.com/) and you can choose which one to use via the `sound` parameter.
 
 - `'beep'`
 - `'bell_tibetan'`
@@ -44,21 +44,23 @@ If you'd like to contribute your mp3 file for other `dingpy` users to access, yo
 
 ```
 # sound_name needs to be globally unique
-dingpy.upload_alarm(file_path='/absolute_path_to_file/sound.mp3', sound_name='beeep') 
+dingpy.upload_alarm(
+    file_path='/absolute_path_to_file/sound.mp3', 
+    sound_name='beeep') 
 ```
 
-After your mp3 file is uploaded, they can be used by other people by specifying the sound name and setting the `s3` parameter to be `True`:
+After your mp3 file is uploaded, they can be used by other people if they pass in the sound name and set the `s3` parameter to be `True`:
 
 ```
-dingpy.ding(sound='sound-name', s3=True)
+dingpy.ding(sound='beeep', s3=True)
 ```
 
-Note that the mp3 file will be downloaded each time when `dingpy.ding()` is called. 
+Note that the mp3 file will be downloaded each time `dingpy.ding()` is called. 
 
 To delete an uploaded alarm (the 10 pre-loaded alarms can't be deleted):
 
 ```
-dingpy.delete_alarm('sound-name')
+dingpy.delete_alarm('beeep')
 ```
 
 ## Installation 
@@ -89,18 +91,19 @@ As stated above, the 10 default alarms are packaged with `dingpy` but user uploa
 
 ## Future Work
 
+- Make available on conda
 - Support other audio formats besides mp3
 - Support text to speech alerts
 - Integrate with `pync` to send MacOS notifications 
 - Local ding for jobs running on remote machines
-- Make available on conda
+
 
 ## Inspirations <a name="inspirations"></a>
 
 I always wanted a Python package that notifies me with a ding when my code completes so I can go about doing other work in the meantime. I couldn't really find one after quite some research so I decided to create `dingpy` for myself. And hopefully it will be helpful to you as well. That being said, if most of your work happens in the terminal or if you prefer to have a pop-up MacOS notification than an audible alarm, do checkout the projects below:
 
-- [`pync`](https://pypi.org/project/pync/) a Python wrapper to send MacOS notifications (Mac only) (it claims to offer sound notification as well but I couldn't make it work)
-- [`ding`](https://github.com/xxv/ding/) a CLI alarm tool for local and remote jobs (it seems to me that you will have to provide your own alarm audio file, you will also need to keep a terminal open running this code at all times, it's not a python package that you can import)
-- [`woof`](https://github.com/msbarry/woof) a set of CLI tools to send notifications (options: music, growl notification, text message, tweet, twitter DM, email, and text-to-speech) (Mac only) (have to save alarm audio locally and modify bash profile, only works in the terminal)
+- [`pync`](https://pypi.org/project/pync/) a Python package to send MacOS notifications (Mac only) (it claims to offer sound notification with the pop-up notification but I couldn't make it work)
+- [`ding`](https://github.com/xxv/ding/) a CLI alarm tool for local and remote jobs (it seems that you will have to provide your own alarm audio file and keep a terminal open running this code the whole time for the alarm to work. not a python package that can be imported)
+- [`woof`](https://github.com/msbarry/woof) a set of CLI tools to send notifications (options: music, growl notification, text message, tweet, twitter DM, email, and text-to-speech) (Mac only) (have to save alarm audio locally and modify bash profile to set proper paths, only works in the terminal)
 - [`notify2`](https://bitbucket.org/takluyver/pynotify2/src) a Python package that sends a MacOS notification (seems not maintained, after installation I got import error for `dbus` and wasn't able to install `dbus` properlly to test it out)
 
