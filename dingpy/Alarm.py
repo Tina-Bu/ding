@@ -2,6 +2,7 @@ import boto3
 from botocore.exceptions import ClientError
 from datetime import datetime
 import logging
+import pkg_resources
 from pydub import AudioSegment
 from pydub.playback import play
 import tempfile
@@ -12,71 +13,81 @@ s3_client = boto3.client('s3')
 BUCKET='dingpy'
 PRE_LOADED_ALARMS = [
     'beep',
-    'bells_tibetan',
+    'bell_tibetan',
+    'birds',
     'clock_chimes',
     'computer_magic',
-    'house_finch',
-    'japanese_temple_bell_small',
+    'japanese_temple_bell',
     'music_box',
-    'old_fashioned_school_bell',
+    'school_bell',
     'service_bell',
     'tinkle'
 ]
 
-
 class MyAlarm(object):
     def __init__(self):
-
         # create a local temporary directory to save the downloaded audio file
-        self._dir = tempfile.mkdtemp()
         self._sound = None
-        self._local_tmp_path = None
 
 
     def __str__(self):
         return f'DingPy MyAlarm Object (sound=\'{self._sound}\')'
 
 
-    def __repr__(self):
-        return {
-            'sound': self._sound,
-            'temp_local_dir': self._local_tmp_path,
-            's3_file_dir': f's3://{BUCKET}/{self._sound}.mp3'
-        }
+    def _ding_from_local(self, sound, path) -> None:
+        '''
+        If using default alarm:
+            read from local package directory.
+
+        If using other alarm effects from local directory:
+            read from loal directory.
+
+        If downloading alarms from s3:
+            first download the sound audio file from s3 to a temporary local directory,
+            then play the alarm and print the alarm time.
+        '''
+        # if using other alarm sounds from user's local directory
+        if path:
+            try:
+                alarm = AudioSegment.from_file(path, format="mp3")
+                play(alarm)
+            except:
+                logging.error(f'❌ Error loading audio file from directory {path}: {e}')
+
+        # if using a pre-loaded alarm, load it from package installation directory
+        elif sound:
+            if sound in PRE_LOADED_ALARMS:
+                self._sound = sound
+                _local_tmp_path = pkg_resources.resource_filename(__name__, f'data/{sound}.mp3')
+                alarm = AudioSegment.from_file(_local_tmp_path, format="mp3")
+                play(alarm)
+            else:
+                logging.error(f'❌ Sound {sound} doesn\'t exist. Try using one of {PRE_LOADED_ALARMS}.')
 
 
-    def ding(self, sound: str='japanese_temple_bell_small') -> None:
+    def _ding_from_s3(self, sound) -> None:
         '''
-        Play the alarm and print the alarm time.
+        Download a mp3 file from s3 to a local temporary directory and plays the alarm.
         '''
-        self._play_alarm(sound=sound)
-        logging.info(f'🛎  at {datetime.now()}')
-
-
-    def _play_alarm(self, sound: str) -> None:
-        '''
-        Downloads the sound audio file to a temporary local directory and play it.
-        '''
-        # create a local temporary directory to save the downloaded audio file
-        self._dir = tempfile.mkdtemp()
         self._sound = sound
-        self._local_tmp_path = f'{self._dir}/dingpy_{self._sound}.mp3'
+        # create a local temporary directory to save the downloaded audio file
+        _local_tmp_path = f'{tempfile.mkdtemp()}/dingpy_{self._sound}.mp3'
 
         try:
             s3_client.download_file(
                 Bucket=BUCKET,
                 Key=f'{self._sound}.mp3',
-                Filename=self._local_tmp_path)
-            alarm = AudioSegment.from_file(self._local_tmp_path, format="mp3")
+                Filename=_local_tmp_path)
+            alarm = AudioSegment.from_file(_local_tmp_path, format="mp3")
             play(alarm)
         except ClientError as e:
             logging.error(f'❌ Error downloading audio file {self._sound} from s3 bucket: {e}')
 
 
     @staticmethod
-    def list_alarms() -> None:
+    def _list_alarms() -> None:
         '''
-        Print a list of pre-loaded alarm sounds.
+        Print a list of all available alarm sounds.
         '''
         alarm_files = _get_s3_keys(bucket=BUCKET)
         alarms = sorted([alarm[:-4] if alarm.endswith('mp3') else alarm for alarm in alarm_files])
@@ -87,7 +98,7 @@ class MyAlarm(object):
 
 
     @staticmethod
-    def upload_alarm(file_path: str, sound_name : str) -> None:
+    def _upload_alarm(file_path: str, sound_name : str) -> None:
         '''
         Allow user to upload a customized mp3 alarm to a public s3 bucket.
 
@@ -111,7 +122,7 @@ class MyAlarm(object):
 
 
     @staticmethod
-    def delete_alarm(sound_name : str):
+    def _delete_alarm(sound_name : str):
         '''
         Allow user to delete custom uploaded alarm sounds.
 
@@ -154,30 +165,20 @@ def _get_s3_keys(bucket: str) -> List[str]:
 Alarm = MyAlarm()
 
 
-def ding(sound: str='japanese_temple_bell_small') -> None:
-    '''
-    Play the alarm and print the alarm time.
-
-    There is an option `sound` to set the alarm sound.
-
-    Example:
-        import dingpy
-        dingpy.ding()
-        dingpy.ding(sound='computer_magic')
-    '''
-    Alarm.ding(sound=sound)
-
+def ding(sound: str='japanese_temple_bell', s3: bool=False, path: str=None) -> None:
+    if sound and not s3:
+        Alarm._ding_from_local(sound=sound, path=path)
+    elif sound and s3:
+        Alarm._ding_from_s3(sound=sound)
 
 def list_alarms() -> None:
-    Alarm.list_alarms()
+    Alarm._list_alarms()
 
 
 def upload_alarm(file_path: str, sound_name : str) -> None:
-    Alarm.upload_alarm(file_path, sound_name)
+    Alarm._upload_alarm(file_path, sound_name)
 
 
 def delete_alarm(sound_name: str) -> None:
-    Alarm.delete_alarm(sound_name)
-
-
+    Alarm._delete_alarm(sound_name)
 

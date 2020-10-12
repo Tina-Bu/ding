@@ -9,18 +9,13 @@ A Python package that plays an audio alert when your program finishes, especiall
 
 ```
 import dingpy
-import time 
 
-# some code
-time.sleep(5)
+dingpy.ding()  # plays the default alarm 'japanese_temple_bell'
 
-dingpy.ding()
+# to use a different alarm sound:
+dingpy.ding(sound='music_box')
 
-# to use a different alarm sound
-# default is 'bells_tibetan'
-dingpy.ding('music_box')
-
-# to list all available alarm sounds
+# to list all available alarms
 dingpy.list_alarms()
 ```
 
@@ -29,29 +24,40 @@ dingpy.list_alarms()
 `Dingpy` comes pre-loaded with 10 royalty free alarm sounds (downloaded from http://soundbible.com/):
 
 - `'beep'`
-- `'bells_tibetan'`
+- `'bell_tibetan'`
+- `'birds'`
 - `'clock_chimes'`
 - `'computer_magic'`
-- `'house_finch'`
-- `'japanese_temple_bell_small'`
+- `'japanese_temple_bell'`
 - `'music_box'`
-- `'old_fashioned_school_bell'`
+- `'school_bell'`
 - `'service_bell'`
 - `'tinkle'`
 
-To upload your custom alarm audio (currently only support mp3 format):
+The 10 audio files are packaged and downloaded when you install `dingpy`. You can further customize `dingpy` by asking it to use a mp3 file from your local directory via the `path` parameter:
 
 ```
-dingpy.upload_alarm(file_path='/local_path/sound.mp3', sound_name='custom-alarm-name') # sound_name needs to be globally unique
+dingpy.ding(path='/local_path/sound.mp3')
 ```
 
-To delete an uploaded alarm audio file (only user uploaded alarms can be deleted):
+If you'd like to contribute your mp3 file for other `dingpy` users to access, you can upload it to the public `dingpy` s3 bucket:
 
 ```
-dingpy.delete_alarm('custom-alarm-name')
+# sound_name needs to be globally unique
+dingpy.upload_alarm(file_path='/local_path/sound.mp3', sound_name='alarm-name') 
 ```
 
-If you did `from dingpy import Alarm` instead of `import dingpy`, just substitute all the `dingpy` in the above commands with `Alarm` and you should be good to go.
+Your uploaded mp3 file will be downloaded each time when `dingpy.ding()` is called. To use an alarm uploaded by other people (because it's not packaged with the `dingpy` installation), you will need to set the `s3` parameter:
+
+```
+dingpy.ding(sound='sound-name', s3=True)
+```
+
+To delete an uploaded alarm (the 10 pre-loaded alarms can't be deleted):
+
+```
+dingpy.delete_alarm('sound-name')
+```
 
 ## Installation 
 
@@ -75,12 +81,17 @@ $ cd dingpy
 $ python setup.py install
 ```
 
+## Prerequisite
+
+As stated above, the 10 default alarms are packaged with `dingpy` but user uploaded alarms are hosted in a public s3 bucket. So if you'd like to use the customization feature you will have to have aws cli configured. To do that, follow the doc [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
+
 ## Future Work
 
 - Support other audio formats besides mp3
 - Support text to speech alerts
 - Integrate with `pync` to send MacOS notifications 
 - Local ding for jobs running on remote machines
+- Make available on conda
 
 ## Inspirations <a name="inspirations"></a>
 

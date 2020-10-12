@@ -1,7 +1,6 @@
-
 recursive-include dingpy *.py
+include dingpy/data/*.mp3
 include LICENSE
-include HISTORY.md
 include README.md
 include setup.py
 include requirements.txt
