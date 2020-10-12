@@ -166,8 +166,15 @@ def ding(sound: str='japanese_temple_bell', s3: bool=False, path: str=None) -> N
         Alarm._ding_from_s3(sound=sound)
 
 
-def list_alarms() -> None:
-    Alarm._list_alarms()
+def list_alarms(all: bool=False) -> None:
+    # return list of 10 pre-loaded alarms
+    if not all:
+        print('All available alarm sounds include: 🛎')
+        for _ in PRE_LOADED_ALARMS:
+            print(f'- \'{_}\'')
+    # if checking for all available alarms, ls s3 bucket
+    else:
+        Alarm._list_alarms()
 
 
 def upload_alarm(file_path: str, sound_name : str) -> None:

@@ -3,16 +3,14 @@
 
 'The setup script.'
 
-# import setuptools
 from distutils.core import setup
-from setuptools import find_packages
 import io
-import os, platform
 from os import path as op
+from setuptools import find_packages
+
 
 with open('README.md', 'r') as readme_file:
     readme = readme_file.read()
-
 
 here = op.abspath(op.dirname(__file__))
 
@@ -24,12 +22,13 @@ install_requires = [x.strip() for x in all_reqs if 'git+' not in x]
 
 dependency_links = [x.strip().replace('git+', '') for x in all_reqs if 'git+' not in x]
 
+
 setup(
     name='dingpy',
-    version='1.0.3',
+    version='1.0.4',
     author='Tina Bu',
     author_email='tina.hongbu@gmail.com',
-    description='added simpleaudio to dependency requirements.txt',
+    description='added list_alarms local vs s3 mode; cleaned setup.py',
     long_description=readme,
     long_description_content_type='text/markdown',
     url='https://github.com/tinahbu/dingpy',
