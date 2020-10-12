@@ -87,6 +87,27 @@ $ python setup.py install
 
 ## Prerequisite
 
+For the `pydub` library to work, you will need to have `ffmpeg` or `libav` installed locally.
+
+```
+$ # install ffmpeg
+$ # for Mac
+$ brew install ffmpeg --with-theora
+$ 
+$ # for Linux
+$ apt-get install ffmpeg libavcodec-extra
+```
+
+```
+$ # install libav
+$ # for Mac
+$ brew install libav --with-libvorbis --with-sdl --with-theora
+$ 
+$ # for Linux
+$ apt-get install libav-tools libavcodec-extra
+```
+
+
 As stated above, the 10 default alarms are packaged with `dingpy` but user uploaded alarms are hosted in a public s3 bucket. So if you'd like to use the customization feature you will have to have aws cli configured. To do that, follow the doc [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
 
 ## Future Work

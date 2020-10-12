@@ -1,1 +1,2 @@
+include dingpy/data/*.mp3
 include requirements.txt
