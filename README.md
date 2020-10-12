@@ -120,16 +120,38 @@ As stated above, the 10 default alarms are packaged with `dingpy` but user uploa
 
 - Make available on conda
 - Support other audio formats besides mp3
+    + maybe not so important
+    + maybe even delete the s3 upload/delete option
 - Support text to speech alerts
-- Integrate with `pync` to send MacOS notifications 
-- Local ding for jobs running on remote machines
+    + MacOS you can do 
+    ```
+    import os 
+    os.system('say "your program has finished"')
+    ```
+    + Linux
+    ```
+    import os 
+    os.system('spd-say "your program has finished"')
 
+    # will need to install the speech-dispatcher package in Ubuntu
+    sudo apt install speech-dispatcher
+    ```
+    + for windows it seems you have to call the aws polly service 
+- Support smart devices integration for remote server
+    + alert user's alexa/google home/pixel phone 
+    + [`pushsafer`](https://www.pushsafer.com/en/python)
+    + [`pushjack`](https://pypi.org/project/pushjack/)
+- Integrate with `pync` to send MacOS notifications 
+    + not sure what's the linux/windows equivalent
+    
 
 ## Inspirations <a name="inspirations"></a>
 
 I always wanted a Python package that notifies me with a ding when my code completes so I can go about doing other work in the meantime. I couldn't really find one after quite some research so I decided to create `dingpy` for myself. And hopefully it will be helpful to you as well. That being said, if most of your work happens in the terminal or if you prefer to have a pop-up MacOS notification than an audible alarm, do checkout the projects below:
 
+- it seems that if you are on windows, you can just do `print('\007')` and it will play a bell sound...
 - [`pync`](https://pypi.org/project/pync/) a Python package to send MacOS notifications (Mac only) (it claims to offer sound notification with the pop-up notification but I couldn't make it work)
+- [`knockknock`](https://github.com/huggingface/knockknock) is a Python package that sends notifications to users and it supports quite a few channels including slack, email, text, discord, desktop, etc. I think it's super cool but personally I never have notification sounds on for anything and I don't want to enable it just for this package. 
 - [`ding`](https://github.com/xxv/ding/) a CLI alarm tool for local and remote jobs (it seems that you will have to provide your own alarm audio file and keep a terminal open running this code the whole time for the alarm to work. not a python package that can be imported)
 - [`woof`](https://github.com/msbarry/woof) a set of CLI tools to send notifications (options: music, growl notification, text message, tweet, twitter DM, email, and text-to-speech) (Mac only) (have to save alarm audio locally and modify bash profile to set proper paths, only works in the terminal)
 - [`notify2`](https://bitbucket.org/takluyver/pynotify2/src) a Python package that sends a MacOS notification (seems not maintained, after installation I got import error for `dbus` and wasn't able to install `dbus` properlly to test it out)
